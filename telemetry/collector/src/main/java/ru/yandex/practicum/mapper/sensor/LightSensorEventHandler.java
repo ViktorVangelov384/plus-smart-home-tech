@@ -18,7 +18,7 @@ public class LightSensorEventHandler extends BaseSensorEventHAndler<LightSensorA
     }
 
     @Override
-    protected SensorEventType getSupportedType() {
+    public SensorEventType getSupportedType() {
         return SensorEventType.LIGHT_SENSOR_EVENT;
     }
 

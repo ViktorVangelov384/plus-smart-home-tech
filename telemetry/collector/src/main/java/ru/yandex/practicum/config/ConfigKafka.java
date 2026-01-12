@@ -1,14 +1,10 @@
 package ru.yandex.practicum.config;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -19,13 +15,9 @@ import java.util.stream.Stream;
 @Slf4j
 @Setter
 @Getter
-@ToString
-@Validated
 @ConfigurationProperties(prefix = "collector.kafka")
 public class ConfigKafka {
 
-    @Valid
-    @NotNull
     private ProducerConfig producer;
 
     @ConstructorBinding
@@ -35,7 +27,6 @@ public class ConfigKafka {
 
     @Getter
     @Setter
-    @ToString
     public static class ProducerConfig {
         private final Properties properties;
 

@@ -19,7 +19,7 @@ public class TemperatureSensorEventHandler extends BaseSensorEventHAndler<Temper
     }
 
     @Override
-    protected SensorEventType getSupportedType() {
+    public SensorEventType getSupportedType() {
         return SensorEventType.TEMPERATURE_SENSOR_EVENT;
     }
 

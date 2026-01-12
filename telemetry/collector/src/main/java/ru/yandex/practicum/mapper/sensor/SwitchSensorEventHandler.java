@@ -19,7 +19,7 @@ public class SwitchSensorEventHandler extends BaseSensorEventHAndler<SwitchSenso
     }
 
     @Override
-    protected SensorEventType getSupportedType() {
+    public SensorEventType getSupportedType() {
         return SensorEventType.SWITCH_SENSOR_EVENT;
     }
 

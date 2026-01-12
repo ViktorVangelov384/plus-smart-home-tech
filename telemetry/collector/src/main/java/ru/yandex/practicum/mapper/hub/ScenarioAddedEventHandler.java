@@ -24,7 +24,7 @@ public class ScenarioAddedEventHandler extends BaseHubEventHandler<ScenarioAdded
     }
 
     @Override
-    protected HubEventType getSupportedType() {
+    public HubEventType getSupportedType() {
         return HubEventType.SCENARIO_ADDED;
     }
 

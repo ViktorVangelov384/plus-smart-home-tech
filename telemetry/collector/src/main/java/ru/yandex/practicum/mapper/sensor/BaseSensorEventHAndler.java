@@ -2,6 +2,7 @@ package ru.yandex.practicum.mapper.sensor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.dto.sensor.SensorEventDto;
 import ru.yandex.practicum.enums.SensorEventType;
 import ru.yandex.practicum.exception.EventProcessingException;
@@ -10,8 +11,8 @@ import ru.yandex.practicum.producer.EventProducer;
 
 import static ru.yandex.practicum.config.ConfigKafka.TopicType.SENSORS_EVENTS;
 
-
 @Slf4j
+@Component
 public abstract class BaseSensorEventHAndler<T extends SpecificRecordBase> implements SensorEventHandler {
 
     protected final EventProducer producer;
@@ -23,6 +24,9 @@ public abstract class BaseSensorEventHAndler<T extends SpecificRecordBase> imple
         this.producer = producer;
         log.debug("Initialized {} handler", this.getClass().getSimpleName());
     }
+
+    @Override
+    public abstract SensorEventType getSupportedType();
 
     @Override
     public boolean canHandle(SensorEventDto event) {
@@ -75,8 +79,6 @@ public abstract class BaseSensorEventHAndler<T extends SpecificRecordBase> imple
                 .setPayload(payload)
                 .build();
     }
-
-    protected abstract SensorEventType getSupportedType();
 
     protected abstract T mapToAvro(SensorEventDto event);
 }

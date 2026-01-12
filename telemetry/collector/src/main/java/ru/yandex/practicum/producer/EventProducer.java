@@ -139,22 +139,6 @@ public class EventProducer implements AutoCloseable {
         producer.flush();
     }
 
-    public void sendSync(SpecificRecordBase event, String hubId, Instant timestamp,
-                         ConfigKafka.TopicType topicType)
-            throws InterruptedException, ExecutionException, TimeoutException {
-
-        validateEvent(event, hubId, topicType);
-
-        String topic = getTopic(topicType);
-        ProducerRecord<String, SpecificRecordBase> record = createRecord(topic, hubId, event, timestamp);
-
-        RecordMetadata metadata = producer.send(record)
-                .get(SEND_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-
-        log.debug("Синхронная отправка завершена - Топик: {}, Партиция: {}, Offset: {}",
-                metadata.topic(), metadata.partition(), metadata.offset());
-    }
-
     @Override
     public void close() {
         if (producer != null) {

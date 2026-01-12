@@ -22,7 +22,7 @@ public class MotionSensorEventHandler extends BaseSensorEventHAndler<MotionSenso
     }
 
     @Override
-    protected SensorEventType getSupportedType() {
+    public SensorEventType getSupportedType() {
         return SensorEventType.MOTION_SENSOR_EVENT;
     }
 

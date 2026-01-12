@@ -18,7 +18,7 @@ public class ClimateSensorEventHandler extends BaseSensorEventHAndler<ClimateSen
     }
 
     @Override
-    protected SensorEventType getSupportedType() {
+    public SensorEventType getSupportedType() {
         return SensorEventType.CLIMATE_SENSOR_EVENT;
     }
 
