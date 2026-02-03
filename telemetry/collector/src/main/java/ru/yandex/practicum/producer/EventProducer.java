@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.ConfigKafka;
 
@@ -12,26 +11,20 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Component
 public class EventProducer implements AutoCloseable {
     private static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration SEND_TIMEOUT = Duration.ofSeconds(5);
-
     private final KafkaProducer<String, SpecificRecordBase> producer;
     private final Map<ConfigKafka.TopicType, String> topics;
 
     public EventProducer(ConfigKafka configKafka) {
-        log.info("Инициализация EventProducer...");
-
+        log.debug("Инициализация EventProducer...");
         validateConfig(configKafka);
         this.topics = createTopicMapping(configKafka);
         this.producer = createKafkaProducer(configKafka);
-
         log.info("EventProducer инициализирован для топиков: {}", topics);
     }
 
@@ -43,23 +36,19 @@ public class EventProducer implements AutoCloseable {
 
     private Map<ConfigKafka.TopicType, String> createTopicMapping(ConfigKafka configKafka) {
         Map<ConfigKafka.TopicType, String> topicMap = new EnumMap<>(ConfigKafka.TopicType.class);
-
         for (ConfigKafka.TopicType topicType : ConfigKafka.TopicType.values()) {
             String topicName = configKafka.getProducer().getTopicName(topicType);
             topicMap.put(topicType, topicName);
         }
-
         return topicMap;
     }
 
     private KafkaProducer<String, SpecificRecordBase> createKafkaProducer(ConfigKafka configKafka) {
         var properties = configKafka.getProducer().getProperties();
-
         Map<String, Object> config = new java.util.HashMap<>();
         for (String key : properties.stringPropertyNames()) {
             config.put(key, properties.getProperty(key));
         }
-
         validateProducerConfig(config);
         return new KafkaProducer<>(config);
     }
@@ -76,14 +65,13 @@ public class EventProducer implements AutoCloseable {
         }
     }
 
-    public void send(SpecificRecordBase event, String hubId, Instant timestamp,
-                     ConfigKafka.TopicType topicType) {
-
+    public void send(SpecificRecordBase event, String hubId, Instant timestamp, ConfigKafka.TopicType topicType) {
+        log.debug("=== EVENTPRODUCER.SEND() ВЫЗВАН ===");
+        log.debug("Тип события: {}, Класс: {}, Hub: {}, Топик тип: {}", event.getClass().getSimpleName(), event, hubId, topicType);
         validateEvent(event, hubId, topicType);
-
         String topic = getTopic(topicType);
         ProducerRecord<String, SpecificRecordBase> record = createRecord(topic, hubId, event, timestamp);
-
+        log.info("Создан ProducerRecord для топика: {}", topic);
         sendAsyncWithCallback(record, topic, hubId);
     }
 
@@ -107,35 +95,19 @@ public class EventProducer implements AutoCloseable {
         return topic;
     }
 
-    private ProducerRecord<String, SpecificRecordBase> createRecord(
-            String topic, String hubId, SpecificRecordBase event, Instant timestamp) {
-
-        long messageTimestamp = timestamp != null
-                ? timestamp.toEpochMilli()
-                : System.currentTimeMillis();
-
-        return new ProducerRecord<>(
-                topic,
-                null,
-                messageTimestamp,
-                hubId,
-                event
-        );
+    private ProducerRecord<String, SpecificRecordBase> createRecord(String topic, String hubId, SpecificRecordBase event, Instant timestamp) {
+        long messageTimestamp = timestamp != null ? timestamp.toEpochMilli() : System.currentTimeMillis();
+        return new ProducerRecord<>(topic, null, messageTimestamp, hubId, event);
     }
 
-    private void sendAsyncWithCallback(ProducerRecord<String, SpecificRecordBase> record,
-                                       String topic, String hubId) {
-
+    private void sendAsyncWithCallback(ProducerRecord<String, SpecificRecordBase> record, String topic, String hubId) {
         producer.send(record, (metadata, exception) -> {
             if (exception != null) {
-                log.error("Ошибка отправки в Kafka - Топик: {}, Хаб: {}, Ошибка: {}",
-                        topic, hubId, exception.getMessage(), exception);
+                log.error("Ошибка отправки в Kafka - Топик: {}, Хаб: {}, Ошибка: {}", topic, hubId, exception.getMessage(), exception);
             } else {
-                log.debug("Сообщение отправлено - Топик: {}, Партиция: {}, Offset: {}, Хаб: {}",
-                        metadata.topic(), metadata.partition(), metadata.offset(), hubId);
+                log.debug("Сообщение отправлено - Топик: {}, Партиция: {}, Offset: {}, Хаб: {}", metadata.topic(), metadata.partition(), metadata.offset(), hubId);
             }
         });
-
         producer.flush();
     }
 

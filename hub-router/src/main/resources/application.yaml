@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: hub-router
+
+hub:
+  id: "smart-home-hub"
+
+grpc:
+  client:
+    collector:
+      address: 'static://localhost:59091'
+      negotiation-type: plaintext
+
+  collector:
+    host: localhost
+    port: 59091
+
+sensor:
+  motionSensors:
+    - id: "motion_kitchen"
+      linkQuality:
+        minValue: 50
+        maxValue: 100
+      voltage:
+        minValue: 2800
+        maxValue: 3200
+    - id: "motion_living_room"
+      linkQuality:
+        minValue: 60
+        maxValue: 95
+      voltage:
+        minValue: 2900
+        maxValue: 3100
+
+  switchSensors:
+    - id: "switch_bedroom_light"
+    - id: "switch_kitchen_light"
+    - id: "switch_outlet_hall"
+
+  temperatureSensors:
+    - id: "temp_bedroom"
+      temperature:
+        minValue: 18
+        maxValue: 24
+    - id: "temp_living_room"
+      temperature:
+        minValue: 20
+        maxValue: 26
+
+  lightSensors:
+    - id: "light_bedroom"
+      luminosity:
+        minValue: 10
+        maxValue: 1000
+      linkQuality:
+        minValue: 50
+        maxValue: 100
+    - id: "light_kitchen"
+      luminosity:
+        minValue: 50
+        maxValue: 1200
+      linkQuality:
+        minValue: 60
+        maxValue: 95
+
+  climateSensors:
+    - id: "climate_bedroom"
+      temperature:
+        minValue: 18
+        maxValue: 24
+      humidity:
+        minValue: 40
+        maxValue: 60
+      co2Level:
+        minValue: 400
+        maxValue: 1200
