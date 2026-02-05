@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: aggregator-service
+
+logging:
+  level:
+    ru.yandex.practicum: INFO
+    org.apache.kafka: WARN
+
+aggregator:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: aggregator-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3

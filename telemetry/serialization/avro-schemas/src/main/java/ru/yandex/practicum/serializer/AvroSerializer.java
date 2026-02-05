@@ -16,6 +16,8 @@ import java.util.Map;
 @Slf4j
 public class AvroSerializer implements Serializer<SpecificRecordBase> {
 
+    private static final EncoderFactory ENCODER_FACTORY = EncoderFactory.get();
+
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
         log.info("Настройка AvroSerializer");
@@ -48,5 +50,7 @@ public class AvroSerializer implements Serializer<SpecificRecordBase> {
 
     @Override
     public void close() {
+        log.debug("AvroSerializer closed");
     }
 }
+
