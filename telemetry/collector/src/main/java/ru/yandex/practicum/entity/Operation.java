@@ -1,4 +1,4 @@
-package ru.yandex.practicum.enums;
+package ru.yandex.practicum.entity;
 
 public enum Operation {
     EQUALS,

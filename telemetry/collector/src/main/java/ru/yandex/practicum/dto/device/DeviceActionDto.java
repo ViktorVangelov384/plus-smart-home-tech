@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.enums.ActionType;
+import ru.yandex.practicum.entity.ActionType;
 
 @Getter
 @Setter
