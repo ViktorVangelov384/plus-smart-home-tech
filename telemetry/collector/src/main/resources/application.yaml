@@ -2,6 +2,9 @@ spring:
   application:
     name: collector
 
+server:
+    port: 8087
+
 logging:
   level:
     ru.yandex.practicum: DEBUG

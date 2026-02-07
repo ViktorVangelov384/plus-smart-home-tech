@@ -1,4 +1,4 @@
-package ru.yandex.practicum.enums;
+package ru.yandex.practicum.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

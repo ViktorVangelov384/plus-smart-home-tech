@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mapper.sensor;
 
 import ru.yandex.practicum.dto.sensor.SensorEventDto;
-import ru.yandex.practicum.enums.SensorEventType;
+import ru.yandex.practicum.entity.SensorEventType;
 
 public interface SensorEventHandler {
 

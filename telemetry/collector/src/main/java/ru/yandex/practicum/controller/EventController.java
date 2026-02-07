@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.hub.HubEventDto;
 import ru.yandex.practicum.dto.sensor.SensorEventDto;
-import ru.yandex.practicum.enums.HubEventType;
-import ru.yandex.practicum.enums.SensorEventType;
+import ru.yandex.practicum.entity.HubEventType;
+import ru.yandex.practicum.entity.SensorEventType;
 import ru.yandex.practicum.mapper.hub.HubEventHandler;
 import ru.yandex.practicum.mapper.sensor.SensorEventHandler;
 
