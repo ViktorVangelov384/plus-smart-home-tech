@@ -11,7 +11,7 @@ import ru.yandex.practicum.dto.device.DeviceAddedEventDto;
 import ru.yandex.practicum.dto.device.DeviceRemovedEventDto;
 import ru.yandex.practicum.dto.scenario.ScenarioAddedEventDto;
 import ru.yandex.practicum.dto.scenario.ScenarioRemoveEventDto;
-import ru.yandex.practicum.enums.HubEventType;
+import ru.yandex.practicum.entity.HubEventType;
 
 import java.time.Instant;
 

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.dto.sensor.LightSensorEventDto;
 import ru.yandex.practicum.dto.sensor.SensorEventDto;
-import ru.yandex.practicum.enums.SensorEventType;
+import ru.yandex.practicum.entity.SensorEventType;
 import ru.yandex.practicum.exception.EventProcessingException;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
 import ru.yandex.practicum.producer.EventProducer;

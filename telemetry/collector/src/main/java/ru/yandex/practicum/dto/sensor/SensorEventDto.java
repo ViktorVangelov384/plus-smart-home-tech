@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.yandex.practicum.enums.SensorEventType;
+import ru.yandex.practicum.entity.SensorEventType;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -40,22 +40,6 @@ public abstract class SensorEventDto {
 
     @NotNull(message = "Тип события обязателен")
     public abstract SensorEventType getType();
-
-    public boolean belongsToHub(String hubId) {
-        return this.hubId != null && this.hubId.equals(hubId);
-    }
-
-    public boolean isFromSensor(String sensorId) {
-        return this.id != null && this.id.equals(sensorId);
-    }
-
-    public boolean isStale(long maxAgeSeconds) {
-        if (timestamp == null) {
-            return true;
-        }
-        Instant threshold = Instant.now().minusSeconds(maxAgeSeconds);
-        return timestamp.isBefore(threshold);
-    }
 
     @Override
     public boolean equals(Object o) {

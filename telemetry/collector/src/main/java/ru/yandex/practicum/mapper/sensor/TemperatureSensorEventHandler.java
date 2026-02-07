@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.dto.sensor.SensorEventDto;
 import ru.yandex.practicum.dto.sensor.TemperatureSensorEventDto;
-import ru.yandex.practicum.enums.SensorEventType;
+import ru.yandex.practicum.entity.SensorEventType;
 import ru.yandex.practicum.exception.EventProcessingException;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
 import ru.yandex.practicum.producer.EventProducer;
@@ -12,6 +12,9 @@ import ru.yandex.practicum.producer.EventProducer;
 @Slf4j
 @Component
 public class TemperatureSensorEventHandler extends BaseSensorEventHAndler<TemperatureSensorAvro> {
+
+    private static final double CELSIUS_TO_FAHRENHEIT_MULTIPLIER = 1.8;
+    private static final int FAHRENHEIT_OFFSET = 32;
 
     public TemperatureSensorEventHandler(EventProducer producer) {
         super(producer);
@@ -35,11 +38,14 @@ public class TemperatureSensorEventHandler extends BaseSensorEventHAndler<Temper
                 log.info("Non-comfortable temperature detected: {}°C", dto.getTemperatureC());
             }
 
+            int temperatureF = convertCelsiusToFahrenheit(dto.getTemperatureC());
+
             return TemperatureSensorAvro.newBuilder()
                     .setId(dto.getId())
                     .setHubId(dto.getHubId())
                     .setTimestamp(dto.getTimestamp())
                     .setTemperatureC(validateTemperature(dto.getTemperatureC()))
+                    .setTemperatureF(temperatureF)
                     .build();
 
         } catch (ClassCastException e) {
@@ -60,5 +66,12 @@ public class TemperatureSensorEventHandler extends BaseSensorEventHAndler<Temper
             log.warn("Temperature out of range: {}°C (expected -50..50)", temperatureC);
         }
         return temperatureC;
+    }
+
+    private int convertCelsiusToFahrenheit(Integer celsius) {
+        if (celsius == null) {
+            return FAHRENHEIT_OFFSET;
+        }
+        return (int) Math.round(celsius * CELSIUS_TO_FAHRENHEIT_MULTIPLIER + FAHRENHEIT_OFFSET);
     }
 }
