@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
-import ru.yandex.practicum.entity.Action;
-import ru.yandex.practicum.entity.Scenario;
+import ru.yandex.practicum.model.Action;
+import ru.yandex.practicum.model.Scenario;
 import ru.yandex.practicum.enums.ActionType;
 
 import java.time.Instant;

@@ -19,8 +19,6 @@
         <module>telemetry</module>
         <module>infra</module>
         <module>commerce</module>
-        <module>grpc-echo-client</module>
-        <module>grpc-echo-server</module>
         <module>hub-router</module>
     </modules>
 

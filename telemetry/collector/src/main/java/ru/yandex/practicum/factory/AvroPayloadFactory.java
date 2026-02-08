@@ -7,24 +7,13 @@ import ru.yandex.practicum.dto.sensor.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
 @Slf4j
-@Component
-public class AvroPayloadFactory {
+public final class AvroPayloadFactory {
 
-    public SpecificRecord createAvroPayload(SensorEventDto dto) {
-        log.debug("Создание Avro payload для типа: {}", dto.getType());
-
-        try {
-            SpecificRecord payload = createPayloadByType(dto);
-            log.debug("Создан Avro payload: {}", payload.getClass().getSimpleName());
-            return payload;
-
-        } catch (ClassCastException e) {
-            log.error("Ошибка приведения типа для DTO: {}", dto.getClass().getSimpleName(), e);
-            throw new IllegalArgumentException("Неверный тип DTO: " + dto.getClass().getSimpleName(), e);
-        }
+    private AvroPayloadFactory() {
+        throw new UnsupportedOperationException("Утильный класс");
     }
 
-    private SpecificRecord createPayloadByType(SensorEventDto dto) {
+    public static SpecificRecord createPayloadByType(SensorEventDto dto) {
         switch (dto.getType()) {
             case CLIMATE_SENSOR_EVENT:
                 ClimateSensorEventDto climateDto = (ClimateSensorEventDto) dto;

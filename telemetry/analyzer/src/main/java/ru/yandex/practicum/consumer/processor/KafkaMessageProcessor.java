@@ -82,7 +82,7 @@ public abstract class KafkaMessageProcessor<T> implements Runnable {
     private void commitConsumerOffsets(Consumer<String, T> consumer) {
         try {
             consumer.commitSync();
-            log.trace("Смещения обработчика {} подтверждены", getProcessorId());
+            log.debug("Смещения обработчика {} подтверждены", getProcessorId());
         } catch (Exception commitError) {
             log.error("Не удалось подтвердить смещения обработчика {}",
                     getProcessorId(), commitError);

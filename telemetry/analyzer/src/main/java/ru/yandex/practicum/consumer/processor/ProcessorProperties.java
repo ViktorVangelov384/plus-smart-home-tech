@@ -29,28 +29,4 @@ public class ProcessorProperties {
 
     //Автоматическое создание топиков
     private boolean allowAutoCreateTopics = false;
-
-    public void validateConfiguration() {
-        if (pollingTimeout <= 0) {
-            throw new IllegalArgumentException(
-                    "Параметр pollingTimeout должен иметь положительное значение"
-            );
-        }
-        if (maxPollRecords <= 0) {
-            throw new IllegalArgumentException(
-                    "Параметр maxPollRecords должен иметь положительное значение"
-            );
-        }
-        validateAutoOffsetReset();
-    }
-
-    private void validateAutoOffsetReset() {
-        if (!"earliest".equals(autoOffsetReset) &&
-                !"latest".equals(autoOffsetReset) &&
-                !"none".equals(autoOffsetReset)) {
-            throw new IllegalArgumentException(
-                    "Параметр autoOffsetReset может принимать значения: earliest, latest, none"
-            );
-        }
-    }
 }

@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.consumer.hub.service.SensorService;
 import ru.yandex.practicum.consumer.hub.mapper.AvroToEntityConverter;
-import ru.yandex.practicum.entity.Scenario;
+import ru.yandex.practicum.model.Scenario;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.repository.ScenarioDao;
 
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class ScenarioAddedHandler implements EventHandler {
 
     private final ScenarioDao scenarioDao;
-    private final SensorService sensorService;
     private final AvroToEntityConverter avroToEntityConverter;
 
     @Override

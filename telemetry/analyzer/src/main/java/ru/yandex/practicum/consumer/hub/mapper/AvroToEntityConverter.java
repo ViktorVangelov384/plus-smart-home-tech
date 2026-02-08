@@ -2,9 +2,9 @@ package ru.yandex.practicum.consumer.hub.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.entity.Action;
-import ru.yandex.practicum.entity.Condition;
-import ru.yandex.practicum.entity.Scenario;
+import ru.yandex.practicum.model.Action;
+import ru.yandex.practicum.model.Condition;
+import ru.yandex.practicum.model.Scenario;
 import ru.yandex.practicum.enums.ActionType;
 import ru.yandex.practicum.enums.ConditionType;
 import ru.yandex.practicum.enums.ConditionTypeOperation;

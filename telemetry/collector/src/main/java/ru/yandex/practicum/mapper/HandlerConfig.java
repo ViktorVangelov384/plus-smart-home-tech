@@ -3,8 +3,8 @@ package ru.yandex.practicum.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.yandex.practicum.entity.HubEventType;
-import ru.yandex.practicum.entity.SensorEventType;
+import ru.yandex.practicum.enums.HubEventType;
+import ru.yandex.practicum.enums.SensorEventType;
 import ru.yandex.practicum.mapper.hub.HubEventHandler;
 import ru.yandex.practicum.mapper.sensor.SensorEventHandler;
 

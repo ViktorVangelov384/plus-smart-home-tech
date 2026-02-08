@@ -6,7 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.consumer.SensorEventConsumer;
 import ru.yandex.practicum.publisher.SnapshotsPublisher;
-import ru.yandex.practicum.repository.AggregatorService;
+import ru.yandex.practicum.service.AggregatorService;
 
 @Slf4j
 @Component

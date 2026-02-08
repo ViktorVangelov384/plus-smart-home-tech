@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.dto.hub.HubEventDto;
 import ru.yandex.practicum.dto.scenario.ScenarioRemoveEventDto;
-import ru.yandex.practicum.entity.HubEventType;
+import ru.yandex.practicum.enums.HubEventType;
 import ru.yandex.practicum.exception.EventProcessingException;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.producer.EventProducer;

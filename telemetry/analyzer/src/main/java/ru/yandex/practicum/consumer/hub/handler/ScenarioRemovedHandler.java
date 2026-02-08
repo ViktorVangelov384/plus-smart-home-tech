@@ -3,7 +3,7 @@ package ru.yandex.practicum.consumer.hub.handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.entity.Scenario;
+import ru.yandex.practicum.model.Scenario;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.repository.ScenarioDao;
 
