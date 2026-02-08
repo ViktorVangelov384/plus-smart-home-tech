@@ -53,9 +53,6 @@ public class AnalyzerApp {
             terminateDataProcessors(hubProcessor, snapshotProcessor);
 
             pauseForCleanup();
-
-            closeApplicationContext(applicationContext);
-
             log.info("Приложение анализа телеметрии успешно остановлено");
         }));
     }
@@ -83,9 +80,5 @@ public class AnalyzerApp {
             log.warn("Поток завершения был прерван");
             Thread.currentThread().interrupt();
         }
-    }
-
-    private static void closeApplicationContext(
-            ConfigurableApplicationContext context) {
     }
 }

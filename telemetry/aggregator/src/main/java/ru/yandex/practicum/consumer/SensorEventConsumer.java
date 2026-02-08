@@ -11,7 +11,7 @@ import java.util.Collections;
 
 @Slf4j
 @Component
-public class SensorEventConsumer {
+public class SensorEventConsumer implements AutoCloseable{
 
     private static final String TOPIC = "telemetry.sensors.v1";
     private static final Duration POLL_TIMEOUT = Duration.ofMillis(100);
@@ -28,6 +28,7 @@ public class SensorEventConsumer {
         return consumer.poll(POLL_TIMEOUT);
     }
 
+    @Override
     public void close() {
         consumer.close();
         log.info("Consumer закрыт");

@@ -87,13 +87,4 @@ public class HubProcessor extends KafkaMessageProcessor<HubEventAvro> {
     private void logUnhandledEvent(String payloadType) {
         log.warn("Не обнаружен подходящий обработчик для типа события: {}", payloadType);
     }
-
-    public void displayHandlersInfo() {
-        log.info("Диагностика процессора событий хаба. Зарегистрировано обработчиков: {}",
-                eventHandlers.size());
-
-        eventHandlers.forEach(handler ->
-                log.debug("  Обработчик: {}", handler.getClass().getSimpleName())
-        );
-    }
 }

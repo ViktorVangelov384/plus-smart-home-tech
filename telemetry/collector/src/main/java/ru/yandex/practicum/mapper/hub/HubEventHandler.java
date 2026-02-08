@@ -1,7 +1,7 @@
 package ru.yandex.practicum.mapper.hub;
 
 import ru.yandex.practicum.dto.hub.HubEventDto;
-import ru.yandex.practicum.entity.HubEventType;
+import ru.yandex.practicum.enums.HubEventType;
 
 public interface HubEventHandler {
 

@@ -17,6 +17,8 @@
         <module>collector</module>
         <module>aggregator</module>
         <module>analyzer</module>
+        <module>grpc-echo-client</module>
+        <module>grpc-echo-server</module>
     </modules>
 
 </project>

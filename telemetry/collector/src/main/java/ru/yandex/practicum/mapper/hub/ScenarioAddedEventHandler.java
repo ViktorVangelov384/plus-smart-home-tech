@@ -6,8 +6,8 @@ import ru.yandex.practicum.dto.hub.HubEventDto;
 import ru.yandex.practicum.dto.scenario.ScenarioAddedEventDto;
 import ru.yandex.practicum.dto.scenario.ScenarioConditionDto;
 import ru.yandex.practicum.dto.device.DeviceActionDto;
-import ru.yandex.practicum.entity.ActionType;
-import ru.yandex.practicum.entity.HubEventType;
+import ru.yandex.practicum.enums.ActionType;
+import ru.yandex.practicum.enums.HubEventType;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.producer.EventProducer;
 

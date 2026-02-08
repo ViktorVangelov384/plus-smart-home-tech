@@ -47,7 +47,27 @@ public class HubRouterGrpcClient {
 
     public boolean verifyConnection() {
         log.trace("Выполняется проверка доступности сервера маршрутизации");
-        return true;
+        try {
+            var channel = (io.grpc.ManagedChannel) grpcChannel.getChannel();
+            boolean isShutdown = channel.isShutdown();
+            boolean isTerminated = channel.isTerminated();
+
+            if (isShutdown || isTerminated) {
+                log.warn("gRPC канал недоступен: shutdown={}, terminated={}",
+                        isShutdown, isTerminated);
+                return false;
+            }
+
+            log.debug("Соединение с сервером маршрутизации активно");
+            return true;
+
+        } catch (StatusRuntimeException e) {
+            log.warn("Сервер маршрутизации недоступен: {}", e.getStatus().getDescription());
+            return false;
+        } catch (Exception e) {
+            log.warn("Ошибка при проверке соединения с сервером маршрутизации", e);
+            return false;
+        }
     }
 
 }

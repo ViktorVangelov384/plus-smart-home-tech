@@ -18,11 +18,6 @@ public abstract class BaseHubEventHandler<T extends SpecificRecordBase> implemen
 
     protected final EventProducer producer;
 
-    /*@Override
-    public HubEventType getSupportedType() {
-        return getSupportedType();
-    }*/
-
     protected abstract T mapToAvro(HubEventDto event);
 
     @Override
