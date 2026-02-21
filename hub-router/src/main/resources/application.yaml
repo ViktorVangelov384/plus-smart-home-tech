@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: hub-router
+
+hub:
+  id: "smart-home-hub"
+
+grpc:
+  client:
+    collector:
+      address: 'static://localhost:59091'
+      negotiation-type: plaintext
+
+  collector:
+    host: localhost
+    port: 59091

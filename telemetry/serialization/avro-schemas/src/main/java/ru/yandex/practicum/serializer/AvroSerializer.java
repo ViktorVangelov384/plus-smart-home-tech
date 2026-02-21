@@ -20,7 +20,7 @@ public class AvroSerializer implements Serializer<SpecificRecordBase> {
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        log.debug("AvroSerializer configured for key: {}", isKey);
+        log.info("Настройка AvroSerializer");
     }
 
     @Override
@@ -29,48 +29,22 @@ public class AvroSerializer implements Serializer<SpecificRecordBase> {
             return null;
         }
 
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            byte[] serializedData = serializeAvroRecord(data, outputStream);
-            logSerializationInfo(topic, data, serializedData);
-            return serializedData;
-
-        } catch (IOException e) {
-            log.error("Ошибка создания ByteArrayOutputStream", e);
-            throw new IllegalStateException("Внутренняя ошибка сериализатора", e);
-        }
-    }
-
-    private byte[] serializeAvroRecord(SpecificRecordBase data, ByteArrayOutputStream outputStream) {
-        try {
-            DatumWriter<SpecificRecordBase> writer = createDatumWriter(data);
-            BinaryEncoder encoder = ENCODER_FACTORY.binaryEncoder(outputStream, null);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
+            BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
 
             writer.write(data, encoder);
             encoder.flush();
 
-            return outputStream.toByteArray();
+            byte[] result = out.toByteArray();
+
+            log.debug("Сериализовано Avro: {} байт для {}",
+                    result.length, data.getClass().getSimpleName());
+
+            return result;
 
         } catch (IOException e) {
-            String errorMessage = String.format(
-                    "Ошибка сериализации Avro объекта %s",
-                    data.getClass().getSimpleName()
-            );
-            log.error(errorMessage, e);
-            throw new SerializationException(errorMessage, e);
-        }
-    }
-
-    private DatumWriter<SpecificRecordBase> createDatumWriter(SpecificRecordBase data) {
-        return new SpecificDatumWriter<>(data.getSchema());
-    }
-
-    private void logSerializationInfo(String topic, SpecificRecordBase data, byte[] serializedData) {
-        if (log.isDebugEnabled()) {
-            log.debug("Сериализовано Avro - Топик: {}, Тип: {}, Размер: {} байт",
-                    topic,
-                    data.getClass().getSimpleName(),
-                    serializedData.length
-            );
+            throw new SerializationException("Ошибка сериализации Avro", e);
         }
     }
 

@@ -2,6 +2,9 @@ spring:
   application:
     name: collector
 
+server:
+    port: 8087
+
 logging:
   level:
     ru.yandex.practicum: DEBUG
@@ -16,6 +19,21 @@ collector:
         client.id: telemetry.collector
         key.serializer: org.apache.kafka.common.serialization.StringSerializer
         value.serializer: ru.yandex.practicum.serializer.AvroSerializer
+        schema.registry.url: http://localhost:8081
+        specific.avro.reader: true
+        auto.register.schemas: true
       topics:
         sensors-events: telemetry.sensors.v1
         hubs-events: telemetry.hubs.v1
+
+grpc:
+  server:
+    port: 59091
+
+
+  client:
+    echo:
+      address: 'static://127.0.0.1:9090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
