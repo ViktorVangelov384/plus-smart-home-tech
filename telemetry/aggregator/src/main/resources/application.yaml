@@ -1,22 +1,24 @@
 spring:
   application:
     name: aggregator-service
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
 
-logging:
-  level:
-    ru.yandex.practicum: INFO
-    org.apache.kafka: WARN
+server:
+  port: 0
 
-aggregator:
-  kafka:
-    consumer:
-      bootstrap-servers: localhost:9092
-      group-id: aggregator-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      enable-auto-commit: false
-      auto-offset-reset: earliest
-    producer:
-      bootstrap-servers: localhost:9092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: all
-      retries: 3
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+  instance:
+    preferIpAddress: true
