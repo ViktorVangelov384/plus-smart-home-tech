@@ -72,12 +72,6 @@
             <version>1.5.5.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>ru.yandex.practicum</groupId>
-            <artifactId>interaction-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>

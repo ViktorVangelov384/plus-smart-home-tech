@@ -12,9 +12,9 @@ import ru.yandex.practicum.model.warehouse.RegisterProductInWarehouseRequest;
 public interface WarehouseMapper {
 
     @Mapping(target = "productId", source = "productId")
-    @Mapping(target = "width", source = "dimensions.width")
-    @Mapping(target = "height", source = "dimensions.height")
-    @Mapping(target = "depth", source = "dimensions.depth")
+    @Mapping(target = "width", source = "dimension.width")
+    @Mapping(target = "height", source = "dimension.height")
+    @Mapping(target = "depth", source = "dimension.depth")
     @Mapping(target = "weight", source = "weight")
     @Mapping(target = "fragile", source = "fragile")
     @Mapping(target = "quantity", constant = "0L")

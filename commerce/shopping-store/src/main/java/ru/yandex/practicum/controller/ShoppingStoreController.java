@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.enums.ProductCategory;
+import ru.yandex.practicum.enums.Quantity;
 import ru.yandex.practicum.model.product.ProductDto;
 import ru.yandex.practicum.model.product.UpdateProductQuantityRequest;
 import ru.yandex.practicum.service.ShoppingStoreProductService;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v1/shopping-store")
 @RequiredArgsConstructor
 public class ShoppingStoreController {
 
@@ -44,40 +45,55 @@ public class ShoppingStoreController {
         return ResponseEntity.ok(product);
     }
 
-    @PostMapping
+    @PutMapping
     public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody ProductDto productDto) {
-
         ProductDto createdProduct = productService.createProduct(productDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
-    @PutMapping("/{productId}")
-    public ResponseEntity<ProductDto> updateProduct(
-            @PathVariable UUID productId,
-            @Valid @RequestBody ProductDto productDto) {
+    @PostMapping("/removeProductFromStore")
+    public ResponseEntity<Boolean> removeProductFromStore(@RequestBody UUID productId) {
+        log.info("Удаление товара с ID: {}", productId);
+        productService.deactivateProduct(productId);
+        return ResponseEntity.ok(true);
+    }
 
-        productDto.setProductId(productId);
-
+    @PostMapping
+    public ResponseEntity<ProductDto> updateProduct(@Valid @RequestBody ProductDto productDto) {
         ProductDto updatedProduct = productService.updateProduct(productDto);
 
         return ResponseEntity.ok(updatedProduct);
     }
 
     @PatchMapping("/{productId}/deactivate")
-    public ResponseEntity<Void> inactivateProduct(@PathVariable UUID productId) {
-        productService.inactivateProduct(productId);
+    public ResponseEntity<Void> deactivateProduct(@PathVariable UUID productId) {
+        productService.deactivateProduct(productId);
 
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/quantity")
-    public ResponseEntity<Void> updateProductQuantity(
-            @Valid @RequestBody UpdateProductQuantityRequest request) {
+    @PostMapping("/quantityState")
+    public ResponseEntity<Boolean> updateProductQuantity(
+            @RequestParam UUID productId,
+            @RequestParam Quantity quantityState) {
 
-        productService.updateProductQuantity(request);
+        try {
+            Quantity quantity = Quantity.valueOf(String.valueOf(quantityState));
+            UpdateProductQuantityRequest request = new UpdateProductQuantityRequest(productId, quantity);
+            productService.updateProductQuantity(request);
 
-        return ResponseEntity.noContent().build();
+            log.info("Статус количества обновлён для товара ID: {}", productId);
+            return ResponseEntity.ok(true);
+
+        } catch (IllegalArgumentException e) {
+            log.error("Неверное значение quantityState: {}. Допустимые значения: ENDED, FEW, ENOUGH, MANY",
+                    quantityState);
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("Ошибка при обновлении статуса количества: {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PatchMapping("/{productId}")
@@ -95,17 +111,17 @@ public class ShoppingStoreController {
         if (productDto.getDescription() != null) {
             existingProduct.setDescription(productDto.getDescription());
         }
-        if (productDto.getImageUrl() != null) {
-            existingProduct.setImageUrl(productDto.getImageUrl());
+        if (productDto.getImageSrc() != null) {
+            existingProduct.setImageSrc(productDto.getImageSrc());
         }
-        if (productDto.getCategory() != null) {
-            existingProduct.setCategory(productDto.getCategory());
+        if (productDto.getProductCategory() != null) {
+            existingProduct.setProductCategory(productDto.getProductCategory());
         }
         if (productDto.getPrice() != null) {
             existingProduct.setPrice(productDto.getPrice());
         }
-        if (productDto.getProductStatus() != null) {
-            existingProduct.setProductStatus(productDto.getProductStatus());
+        if (productDto.getProductState() != null) {
+            existingProduct.setProductState(productDto.getProductState());
         }
 
         ProductDto updatedProduct = productService.updateProduct(existingProduct);
@@ -125,4 +141,5 @@ public class ShoppingStoreController {
             return ResponseEntity.ok(false);
         }
     }
+
 }

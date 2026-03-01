@@ -11,7 +11,6 @@ import java.util.UUID;
 @IdClass(CartProductId.class)
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -49,5 +48,14 @@ public class CartProduct {
     @Override
     public final int hashCode() {
         return Objects.hash(shoppingCartId, productId);
+    }
+
+    @Override
+    public String toString() {
+        return "CartProduct{" +
+                "shoppingCartId=" + shoppingCartId +
+                ", productId=" + productId +
+                ", quantity=" + quantity +
+                '}';
     }
 }

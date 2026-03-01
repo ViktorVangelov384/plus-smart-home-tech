@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.exception.NoProductInWarehouseException;
+import ru.yandex.practicum.exception.ProductAlreadyExistsException;
 import ru.yandex.practicum.model.warehouse.*;
 import ru.yandex.practicum.service.WarehouseService;
 
@@ -19,55 +21,75 @@ public class WarehouseController {
 
     private final WarehouseService warehouseService;
 
-    @PostMapping("/products")
+    @PutMapping
     public ResponseEntity<Void> addNewProduct(
             @Valid @RequestBody RegisterProductInWarehouseRequest request) {
 
-        warehouseService.addNewProduct(request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        try {
+            warehouseService.addNewProduct(request);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка валидации: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (ProductAlreadyExistsException e) {
+            log.error("Товар уже существует: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @PostMapping("/check")
     public ResponseEntity<BookedProductsDto> checkAndBookProducts(
             @Valid @RequestBody ShoppingCartDto shoppingCart) {
-        BookedProductsDto result = warehouseService.checkAndBookProducts(shoppingCart);
-
-        return ResponseEntity.ok(result);
+        try {
+            BookedProductsDto result = warehouseService.checkAndBookProducts(shoppingCart);
+            return ResponseEntity.ok(result);
+        } catch (NoProductInWarehouseException e) {
+            log.error("Товар не найден на складе: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка валидации корзины: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @PostMapping("/products/restock")
-    public ResponseEntity<Void> addProduct(
+    @PostMapping("/add")
+    public ResponseEntity<Void> addProductToWarehouse(
             @Valid @RequestBody RestockProductRequest request) {
-
-        warehouseService.addProduct(request.getProductId(), request.getQuantity());
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/products/{productId}")
-    public ResponseEntity<Void> addProduct(
-            @PathVariable UUID productId,
-            @RequestParam @Valid Long quantity) {
-
-        warehouseService.addProduct(productId, quantity);
-
-        log.info("Количество товара {} обновлено", productId);
-        return ResponseEntity.ok().build();
+        try {
+            warehouseService.addProduct(request.getProductId(), request.getQuantity());
+            return ResponseEntity.ok().build();
+        } catch (NoProductInWarehouseException e) {
+            log.error("Товар не найден на складе: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка валидации: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("Внутренняя ошибка сервера: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();  // 500
+        }
     }
 
     @GetMapping("/address")
     public ResponseEntity<AddressDto> getWarehouseAddress() {
-        AddressDto address = warehouseService.getWarehouseAddress();
-
-        return ResponseEntity.ok(address);
+        try {
+            AddressDto address = warehouseService.getWarehouseAddress();
+            return ResponseEntity.ok(address);
+        } catch (Exception e) {
+            log.error("Ошибка при получении адреса: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/products/{productId}/availability")
     public ResponseEntity<ProductStockResponse> checkStock(
             @PathVariable UUID productId,
             @RequestParam(required = false, defaultValue = "1") Long quantity) {
-
-        return ResponseEntity.ok(new ProductStockResponse(productId, quantity, true));
+        try {
+            return ResponseEntity.ok(new ProductStockResponse(productId, quantity, true));
+        } catch (Exception e) {
+            log.error("Ошибка при проверке наличия: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

@@ -2,10 +2,7 @@ package ru.yandex.practicum.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-import ru.yandex.practicum.enums.ProductCategory;
-import ru.yandex.practicum.enums.ProductStatus;
-import ru.yandex.practicum.enums.Quantity;
+import ru.yandex.practicum.enums.ProductState;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,15 +13,13 @@ import java.util.UUID;
 @Table(name = "product", schema = "shopping_store_schema")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
+    @Column(name = "product_id", updatable = false, nullable = false)
     private UUID productId;
 
     @Column(name = "product_name", nullable = false, length = 255)
@@ -36,17 +31,15 @@ public class Product {
     @Column(name = "image_src", length = 512)
     private String imageSrc;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "quantity_state", nullable = false, length = 20)
-    private Quantity quantityState;
+    private String quantityState;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_state", nullable = false, length = 20)
-    private ProductStatus productStatus;
+    private ProductState productState;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "product_category", nullable = false, length = 20)
-    private ProductCategory productCategory;
+    private String productCategory;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
@@ -61,31 +54,35 @@ public class Product {
     protected void onCreate() {
         createdAt = Instant.now();
         updatedAt = Instant.now();
-        if (productStatus == null) {
-            productStatus = ProductStatus.ACTIVE;
+        if (productState == null) {
+            productState = ProductState.ACTIVE;
         }
-        if (quantityState == null) {
-            quantityState = Quantity.ENDED;
+        if (productId == null) {
+            productId = UUID.randomUUID();
         }
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ?
-                ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ?
-                ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return getProductId() != null && Objects.equals(getProductId(), product.getProductId());
+        return Objects.equals(productId, product.productId);
     }
 
     @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ?
-                ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() :
-                getClass().hashCode();
+    public int hashCode() {
+        return Objects.hash(productId);
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", productState=" + productState +
+                ", price=" + price +
+                '}';
+    }
+
 }

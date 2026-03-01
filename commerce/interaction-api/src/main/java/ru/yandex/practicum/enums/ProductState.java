@@ -1,6 +1,6 @@
 package ru.yandex.practicum.enums;
 
-public enum ProductStatus {
+public enum ProductState {
     ACTIVE,
-    INACTIVE
+    DEACTIVATE
 }

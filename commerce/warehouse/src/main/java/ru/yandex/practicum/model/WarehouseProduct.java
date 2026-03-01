@@ -11,14 +11,12 @@ import java.util.UUID;
 @Table(name = "warehouse_product", schema = "warehouse_schema")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class WarehouseProduct {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "product_id", updatable = false, nullable = false)
     private UUID productId;
 
@@ -58,5 +56,18 @@ public class WarehouseProduct {
         return this instanceof HibernateProxy ?
                 ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() :
                 getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "WarehouseProduct{" +
+                "productId=" + productId +
+                ", width=" + width +
+                ", height=" + height +
+                ", depth=" + depth +
+                ", weight=" + weight +
+                ", fragile=" + fragile +
+                ", quantity=" + quantity +
+                '}';
     }
 }

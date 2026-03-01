@@ -13,15 +13,13 @@ import java.util.UUID;
 @Table(name = "shopping_carts", schema = "shopping_cart_schema")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ShoppingCart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
+    @Column(name = "shopping_cart_id", updatable = false, nullable = false)
     private UUID shoppingCartId;
 
     @Column(nullable = false, unique = true, length = 32)
@@ -38,6 +36,9 @@ public class ShoppingCart {
 
     @PrePersist
     protected void onCreate() {
+        if (shoppingCartId == null) {
+            shoppingCartId = UUID.randomUUID();
+        }
         if (cartState == null) {
             cartState = CartState.ACTIVE;
         }
@@ -57,5 +58,14 @@ public class ShoppingCart {
     @Override
     public final int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "ShoppingCart{" +
+                "shoppingCartId=" + shoppingCartId +
+                ", username='" + username + '\'' +
+                ", cartState='" + cartState + '\'' +
+                '}';
     }
 }

@@ -1,11 +1,11 @@
 package ru.yandex.practicum.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.model.cart.UpdateCartItem;
 import ru.yandex.practicum.model.warehouse.ShoppingCartDto;
 import ru.yandex.practicum.service.ShoppingCartService;
 
@@ -24,39 +24,37 @@ public class ShoppingCartController {
         this.shoppingCartService = shoppingCartService;
     }
 
-
-    @GetMapping("/{username}")
-    public ResponseEntity<ShoppingCartDto> getCartByUsername(@PathVariable String username) {
+    @GetMapping
+    public ResponseEntity<ShoppingCartDto> getCartByUsername(@RequestParam String username) {
 
         ShoppingCartDto cart = shoppingCartService.getCartByUsername(username);
 
         return ResponseEntity.ok(cart);
     }
 
-    @PostMapping("/{username}/products")
+    @PutMapping
     public ResponseEntity<ShoppingCartDto> addProductsToCart(
-            @PathVariable String username,
+            @RequestParam String username,
             @Valid @RequestBody Map<UUID, Long> products) {
 
-        ShoppingCartDto updatedCart = shoppingCartService.addProductsToCart(username, products);
+        ShoppingCartDto updatedCart = shoppingCartService.addProductToCart(username, products);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedCart);
     }
 
-    @PutMapping("/{username}/products/{productId}")
+    @PostMapping("/change-quantity")
     public ResponseEntity<ShoppingCartDto> updateProductQuantity(
-            @PathVariable String username,
-            @PathVariable UUID productId,
-            @RequestParam @Valid @Min(1) Long quantity) {
+            @RequestParam String username,
+            @Valid @RequestBody UpdateCartItem updateItem) {
 
-        ShoppingCartDto updatedCart = shoppingCartService.updateProductQuantity(username, productId, quantity);
-
+        ShoppingCartDto updatedCart = shoppingCartService.updateProductQuantity(
+                username, updateItem.getProductId(), updateItem.getNewQuantity());
         return ResponseEntity.ok(updatedCart);
     }
 
-    @DeleteMapping("/{username}/products")
+    @PostMapping("/remove")
     public ResponseEntity<ShoppingCartDto> removeProductsFromCart(
-            @PathVariable String username,
+            @RequestParam  String username,
             @Valid @RequestBody List<UUID> productIds) {
 
         ShoppingCartDto updatedCart = shoppingCartService.removeProductsFromCart(username, productIds);
@@ -72,8 +70,8 @@ public class ShoppingCartController {
         return ResponseEntity.ok(clearedCart);
     }
 
-    @PatchMapping("/{username}/deactivate")
-    public ResponseEntity<Void> deactivateCart(@PathVariable String username) {
+    @DeleteMapping
+    public ResponseEntity<Void> deactivateCart(@RequestParam String username) {
 
         shoppingCartService.deactivateCart(username);
         return ResponseEntity.noContent().build();

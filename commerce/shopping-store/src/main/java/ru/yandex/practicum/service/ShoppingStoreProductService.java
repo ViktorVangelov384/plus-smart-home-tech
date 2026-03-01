@@ -18,7 +18,7 @@ public interface ShoppingStoreProductService {
 
     ProductDto updateProduct(ProductDto productDto);
 
-    void inactivateProduct(UUID productId);
+    void deactivateProduct(UUID productId);
 
     void updateProductQuantity(UpdateProductQuantityRequest request);
 }

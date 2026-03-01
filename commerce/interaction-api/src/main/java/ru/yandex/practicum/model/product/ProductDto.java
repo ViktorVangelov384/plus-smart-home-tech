@@ -3,7 +3,8 @@ package ru.yandex.practicum.model.product;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import ru.yandex.practicum.enums.ProductCategory;
-import ru.yandex.practicum.enums.ProductStatus;
+import ru.yandex.practicum.enums.ProductState;
+import ru.yandex.practicum.enums.Quantity;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -20,15 +21,19 @@ public class ProductDto {
     @NotBlank
     private String description;
 
-    private String imageUrl;
+    private String imageSrc;
 
     @NotNull
-    private ProductStatus productStatus;
+    private Quantity quantityState;
 
     @NotNull
-    private ProductCategory category;
+    private ProductState productState;
+
+    @NotNull
+    private ProductCategory productCategory;
 
     @NotNull
     @Min(1)
     private BigDecimal price;
+
 }

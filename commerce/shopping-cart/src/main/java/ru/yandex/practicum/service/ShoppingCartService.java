@@ -10,7 +10,7 @@ public interface ShoppingCartService {
 
     ShoppingCartDto getCartByUsername(String username);
 
-    ShoppingCartDto addProductsToCart(String username, Map<UUID, Long> products);
+    ShoppingCartDto addProductToCart(String username, Map<UUID, Long> products);
 
     ShoppingCartDto updateProductQuantity(String username, UUID productId, Long newQuantity);
 

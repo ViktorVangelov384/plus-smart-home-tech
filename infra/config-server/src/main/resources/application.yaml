@@ -13,7 +13,7 @@ spring:
 
 
 server:
-  port: ${PORT:0}
+  port: 0
 
 eureka:
   client:
@@ -21,3 +21,12 @@ eureka:
       defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
   instance:
       preferIpAddress: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

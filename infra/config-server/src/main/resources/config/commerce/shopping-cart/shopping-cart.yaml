@@ -17,10 +17,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/commerce_shopping_cart
     username: postgres
-    password: shareit
+    password: ${DB_PASSWORD:shareit}
 
 server:
-  port: ${PORT:0}
+  port: 0
 
 logging:
   level:
@@ -34,32 +34,3 @@ feign:
       warehouse:
         connectTimeout: 5000
         readTimeout: 5000
-  circuitbreaker:
-    enabled: true
-
-resilience4j:
-  circuitbreaker:
-    instances:
-      warehouseClient:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10000
-        permittedNumberOfCallsInHalfOpenState: 5
-        minimumNumberOfCalls: 5
-        automaticTransitionFromOpenToHalfOpenState: true
-  timelimiter:
-    instances:
-      warehouseClient:
-        timeoutDuration: 5s
-
-management:
-  health:
-    circuitbreakers:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics,circuitbreakers
-  endpoint:
-    health:
-      show-details: always

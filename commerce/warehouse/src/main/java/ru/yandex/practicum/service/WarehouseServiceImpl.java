@@ -28,7 +28,6 @@ public class WarehouseServiceImpl implements WarehouseService {
             WAREHOUSE_ADDRESSES[new Random().nextInt(WAREHOUSE_ADDRESSES.length)];
 
     private static final String PRODUCT_NOT_FOUND_MSG = "Товар с productId={0} не найден на складе";
-    private static final String PRODUCT_ALREADY_EXISTS_MSG = "Товар с productId={0} уже есть на складе";
     private static final String INSUFFICIENT_STOCK_MSG =
             "Недостаточно товара productId={0}. Требуется: {1}, доступно: {2}";
 
@@ -37,21 +36,25 @@ public class WarehouseServiceImpl implements WarehouseService {
     public void addNewProduct(RegisterProductInWarehouseRequest request) {
         log.info("Добавление нового товара на склад: productId={}", request.getProductId());
 
+        validateNewProductRequest(request);
+
         if (repository.existsById(request.getProductId())) {
-            throw new NoProductInWarehouseException(
-                    MessageFormat.format(PRODUCT_ALREADY_EXISTS_MSG, request.getProductId()));
+            log.info("Товар уже существует, пропускаем создание: productId={}", request.getProductId());
+            return;
         }
 
         WarehouseProduct product = mapper.toEntity(request);
         product.setQuantity(0L);
 
-        repository.save(product);
-        log.info("Товар успешно добавлен на склад: productId={}", request.getProductId());
+        repository.saveAndFlush(product);
+        log.info("Товар сохранен в БД: productId={}", product.getProductId());
     }
 
     @Override
     public BookedProductsDto checkAndBookProducts(ShoppingCartDto shoppingCart) {
         log.info("Проверка наличия товаров для корзины: cartId={}", shoppingCart.getCartId());
+
+        validateShoppingCart(shoppingCart);
 
         double totalWeight = 0.0;
         double totalVolume = 0.0;
@@ -86,14 +89,15 @@ public class WarehouseServiceImpl implements WarehouseService {
         log.info("Увеличение количества товара на складе: productId={}, quantity={}",
                 productId, quantity);
 
-        WarehouseProduct product = findProductOrThrow(productId);
+        WarehouseProduct product = repository.findById(productId)
+                .orElseThrow(() -> new NoProductInWarehouseException(
+                        MessageFormat.format(PRODUCT_NOT_FOUND_MSG, productId)));
 
-        Long newQuantity = product.getQuantity() + quantity;
-        product.setQuantity(newQuantity);
-
+        product.setQuantity(product.getQuantity() + quantity);
         repository.save(product);
+
         log.info("Количество товара обновлено: productId={}, новое количество={}",
-                productId, newQuantity);
+                productId, product.getQuantity());
     }
 
     @Override
@@ -105,16 +109,34 @@ public class WarehouseServiceImpl implements WarehouseService {
         address.setCity(CURRENT_WAREHOUSE_ADDRESS);
         address.setStreet(CURRENT_WAREHOUSE_ADDRESS);
         address.setHouse(CURRENT_WAREHOUSE_ADDRESS);
-        address.setApartment(CURRENT_WAREHOUSE_ADDRESS);
+        address.setFlat(CURRENT_WAREHOUSE_ADDRESS);
 
         log.info("Адрес склада предоставлен: {}", CURRENT_WAREHOUSE_ADDRESS);
         return address;
     }
 
+    private void validateNewProductRequest(RegisterProductInWarehouseRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request не может быть null");
+        }
+        if (request.getProductId() == null) {
+            throw new IllegalArgumentException("ID товара не может быть null");
+        }
+        if (request.getDimension() == null) {
+            throw new IllegalArgumentException("Размеры товара не могут быть null");
+        }
+        if (request.getWeight() == null || request.getWeight() <= 0) {
+            throw new IllegalArgumentException("Вес товара должен быть больше 0");
+        }
+    }
+
     private WarehouseProduct findProductOrThrow(UUID productId) {
         return repository.findById(productId)
-                .orElseThrow(() -> new NoProductInWarehouseException(
-                        MessageFormat.format(PRODUCT_NOT_FOUND_MSG, productId)));
+                .orElseThrow(() -> {
+                    log.error("Товар НЕ НАЙДЕН в БД: {}", productId);
+                    return new NoProductInWarehouseException(
+                            MessageFormat.format(PRODUCT_NOT_FOUND_MSG, productId));
+                });
     }
 
     private void validateProduct(WarehouseProduct product, Long requiredQuantity) {
@@ -124,6 +146,24 @@ public class WarehouseServiceImpl implements WarehouseService {
                             product.getProductId(),
                             requiredQuantity,
                             product.getQuantity()));
+        }
+    }
+
+    private void validateShoppingCart(ShoppingCartDto shoppingCart) {
+        if (shoppingCart == null) {
+            throw new IllegalArgumentException("Корзина не может быть null");
+        }
+        if (shoppingCart.getProducts() == null || shoppingCart.getProducts().isEmpty()) {
+            throw new IllegalArgumentException("Корзина не может быть пустой");
+        }
+    }
+
+    private void validateAddProductRequest(UUID productId, Long quantity) {
+        if (productId == null) {
+            throw new IllegalArgumentException("ID товара не может быть null");
+        }
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Количество должно быть больше 0");
         }
     }
 

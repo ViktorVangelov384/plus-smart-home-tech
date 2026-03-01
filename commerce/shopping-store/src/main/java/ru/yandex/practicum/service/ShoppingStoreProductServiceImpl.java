@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.enums.ProductCategory;
-import ru.yandex.practicum.enums.ProductStatus;
+import ru.yandex.practicum.enums.ProductState;
 import ru.yandex.practicum.enums.Quantity;
 import ru.yandex.practicum.exception.ProductNotFoundException;
 import ru.yandex.practicum.mapper.ProductMapper;
@@ -36,7 +36,12 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
         log.debug("Запрос товаров категории: {}, страница: {}, размер: {}",
                 category, pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<Product> products = productRepository.findByProductCategory(category, pageable);
+        if (category == null) {
+            throw new ValidationException("Категория товара не может быть null");
+        }
+
+        Page<Product> products = productRepository.findByProductCategory(category.name(), pageable);
+
 
         log.info("Найдено {} товаров категории {}", products.getTotalElements(), category);
         return products.map(productMapper::toDto);
@@ -62,7 +67,7 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
         Product product = productMapper.toEntity(productDto);
 
         if (product.getQuantityState() == null) {
-            product.setQuantityState(Quantity.ENDED);
+            product.setQuantityState(Quantity.ENOUGH.name());
         }
 
         Product savedProduct = productRepository.save(product);
@@ -81,13 +86,18 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
 
         Product existingProduct = findProductOrThrow(productId);
 
-        Product product = productMapper.toEntity(productDto);
+        existingProduct.setProductName(productDto.getProductName());
+        existingProduct.setDescription(productDto.getDescription());
+        existingProduct.setImageSrc(productDto.getImageSrc());
+        existingProduct.setPrice(productDto.getPrice());
+        existingProduct.setProductState(productDto.getProductState());
+        existingProduct.setProductCategory(productDto.getProductCategory().name());
 
-        if (product.getQuantityState() == null) {
-            product.setQuantityState(existingProduct.getQuantityState());
+        if (productDto.getQuantityState() != null) {
+            existingProduct.setQuantityState(productDto.getQuantityState().name());
         }
 
-        Product updatedProduct = productRepository.save(product);
+        Product updatedProduct = productRepository.save(existingProduct);
 
         log.info("Товар {} успешно обновлён", updatedProduct.getProductName());
         return productMapper.toDto(updatedProduct);
@@ -95,11 +105,15 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
 
     @Transactional
     @Override
-    public void inactivateProduct(UUID productId) {
+    public void deactivateProduct(UUID productId) {
         log.info("Деактивация товара с ID: {}", productId);
 
+        if (productId == null) {
+            throw new ValidationException("ID товара не может быть null");
+        }
+
         Product product = findProductOrThrow(productId);
-        product.setProductStatus(ProductStatus.INACTIVE);
+        product.setProductState(ProductState.DEACTIVATE);
 
         productRepository.save(product);
         log.info("Товар {} деактивирован", product.getProductName());
@@ -111,8 +125,17 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
         log.info("Обновление статуса количества товара ID: {} на {}",
                 request.getProductId(), request.getProductQuantity());
 
+        if (request == null) {
+            throw new ValidationException("Request не может быть null");
+        }
+        if (request.getProductId() == null) {
+            throw new ValidationException("ID товара не может быть null");
+        }
+        if (request.getProductQuantity() == null) {
+            throw new ValidationException("Статус количества не может быть null");
+        }
         Product product = findProductOrThrow(request.getProductId());
-        product.setQuantityState(request.getProductQuantity());
+        product.setQuantityState(request.getProductQuantity().name());
 
         productRepository.save(product);
         log.info("Статус количества товара {} обновлён на: {}",

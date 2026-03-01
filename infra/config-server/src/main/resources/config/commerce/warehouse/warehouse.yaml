@@ -14,11 +14,11 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/commerce_warehouse
     username: postgres
-    password: shareit
+    password: ${DB_PASSWORD:shareit}
 
 
 server:
-  port: ${PORT:0}
+  port: 0
 
 logging:
   level:

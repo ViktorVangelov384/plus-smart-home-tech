@@ -15,7 +15,7 @@ public class RegisterProductInWarehouseRequest {
     private Boolean fragile;
 
     @NotNull
-    private ProductDimensionDto dimensions;
+    private ProductDimensionDto dimension;
 
     @NotNull
     @Min(1)
