@@ -2,10 +2,10 @@ package ru.yandex.practicum.mapper.hub;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.hub.HubEventDto;
-import ru.yandex.practicum.dto.scenario.ScenarioAddedEventDto;
-import ru.yandex.practicum.dto.scenario.ScenarioConditionDto;
-import ru.yandex.practicum.dto.device.DeviceActionDto;
+import ru.yandex.practicum.model.hub.HubEventDto;
+import ru.yandex.practicum.model.scenario.ScenarioAddedEventDto;
+import ru.yandex.practicum.model.scenario.ScenarioConditionDto;
+import ru.yandex.practicum.model.device.DeviceActionDto;
 import ru.yandex.practicum.enums.ActionType;
 import ru.yandex.practicum.enums.HubEventType;
 import ru.yandex.practicum.kafka.telemetry.event.*;

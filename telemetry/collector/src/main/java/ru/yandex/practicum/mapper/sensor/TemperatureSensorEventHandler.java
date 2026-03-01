@@ -2,8 +2,8 @@ package ru.yandex.practicum.mapper.sensor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.sensor.SensorEventDto;
-import ru.yandex.practicum.dto.sensor.TemperatureSensorEventDto;
+import ru.yandex.practicum.model.sensor.SensorEventDto;
+import ru.yandex.practicum.model.sensor.TemperatureSensorEventDto;
 import ru.yandex.practicum.enums.SensorEventType;
 import ru.yandex.practicum.exception.EventProcessingException;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
