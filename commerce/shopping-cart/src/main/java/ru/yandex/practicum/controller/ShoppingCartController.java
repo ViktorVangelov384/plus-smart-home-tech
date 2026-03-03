@@ -1,6 +1,7 @@
 package ru.yandex.practicum.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,10 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/shopping-cart")
+@RequiredArgsConstructor
 public class ShoppingCartController {
 
     private final ShoppingCartService shoppingCartService;
-
-    public ShoppingCartController(ShoppingCartService shoppingCartService) {
-        this.shoppingCartService = shoppingCartService;
-    }
 
     @GetMapping
     public ResponseEntity<ShoppingCartDto> getCartByUsername(@RequestParam String username) {
@@ -80,11 +78,7 @@ public class ShoppingCartController {
     @GetMapping("/{username}/exists")
     public ResponseEntity<Boolean> checkCartExists(@PathVariable String username) {
 
-        try {
-            shoppingCartService.getCartByUsername(username);
-            return ResponseEntity.ok(true);
-        } catch (Exception e) {
-            return ResponseEntity.ok(false);
-        }
+        boolean exists = shoppingCartService.existsByUsername(username);
+        return ResponseEntity.ok(exists);
     }
 }

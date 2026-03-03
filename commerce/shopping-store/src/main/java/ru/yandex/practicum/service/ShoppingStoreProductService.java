@@ -21,4 +21,6 @@ public interface ShoppingStoreProductService {
     void deactivateProduct(UUID productId);
 
     void updateProductQuantity(UpdateProductQuantityRequest request);
+
+    boolean existsById(UUID productId);
 }

@@ -19,4 +19,6 @@ public interface ShoppingCartService {
     ShoppingCartDto clearCart(String username);
 
     void deactivateCart(String username);
+
+    boolean existsByUsername(String username);
 }

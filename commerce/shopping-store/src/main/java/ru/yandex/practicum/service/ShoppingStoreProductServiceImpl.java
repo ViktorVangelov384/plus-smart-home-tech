@@ -1,6 +1,5 @@
 package ru.yandex.practicum.service;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,12 +35,7 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
         log.debug("Запрос товаров категории: {}, страница: {}, размер: {}",
                 category, pageable.getPageNumber(), pageable.getPageSize());
 
-        if (category == null) {
-            throw new ValidationException("Категория товара не может быть null");
-        }
-
         Page<Product> products = productRepository.findByProductCategory(category.name(), pageable);
-
 
         log.info("Найдено {} товаров категории {}", products.getTotalElements(), category);
         return products.map(productMapper::toDto);
@@ -60,8 +54,6 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
     @Transactional
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        validateNewProduct(productDto);
-
         log.info("Создание нового товара: {}", productDto.getProductName());
 
         Product product = productMapper.toEntity(productDto);
@@ -79,8 +71,6 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
     @Transactional
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
-        validateExistingProduct(productDto);
-
         UUID productId = productDto.getProductId();
         log.info("Обновление товара с ID: {}", productId);
 
@@ -108,10 +98,6 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
     public void deactivateProduct(UUID productId) {
         log.info("Деактивация товара с ID: {}", productId);
 
-        if (productId == null) {
-            throw new ValidationException("ID товара не может быть null");
-        }
-
         Product product = findProductOrThrow(productId);
         product.setProductState(ProductState.DEACTIVATE);
 
@@ -125,15 +111,6 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
         log.info("Обновление статуса количества товара ID: {} на {}",
                 request.getProductId(), request.getProductQuantity());
 
-        if (request == null) {
-            throw new ValidationException("Request не может быть null");
-        }
-        if (request.getProductId() == null) {
-            throw new ValidationException("ID товара не может быть null");
-        }
-        if (request.getProductQuantity() == null) {
-            throw new ValidationException("Статус количества не может быть null");
-        }
         Product product = findProductOrThrow(request.getProductId());
         product.setQuantityState(request.getProductQuantity().name());
 
@@ -142,29 +119,15 @@ public class ShoppingStoreProductServiceImpl implements ShoppingStoreProductServ
                 product.getProductName(), request.getProductQuantity());
     }
 
+    @Override
+    public boolean existsById(UUID productId) {
+        log.debug("Проверка существования товара ID: {}", productId);
+        return productRepository.existsById(productId);
+    }
+
     private Product findProductOrThrow(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(
                         MessageFormat.format(PRODUCT_NOT_FOUND_MSG, productId)));
-    }
-
-    private void validateNewProduct(ProductDto productDto) {
-        if (productDto.getProductId() != null) {
-            throw new ValidationException("При создании товара productId должен быть null");
-        }
-
-        if (productDto.getProductName() == null || productDto.getProductName().trim().isEmpty()) {
-            throw new ValidationException("Название товара обязательно");
-        }
-
-        if (productDto.getPrice() == null || productDto.getPrice().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-            throw new ValidationException("Цена товара должна быть больше 0");
-        }
-    }
-
-    private void validateExistingProduct(ProductDto productDto) {
-        if (productDto.getProductId() == null) {
-            throw new ValidationException("При обновлении товара productId обязателен");
-        }
     }
 }

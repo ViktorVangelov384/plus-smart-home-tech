@@ -26,8 +26,6 @@ public class ShoppingStoreController {
 
     private final ShoppingStoreProductService productService;
 
-    private static final String PRODUCT_LOG = "Товар ID: {}";
-
     @GetMapping
     public ResponseEntity<Page<ProductDto>> getProductsByCategory(
             @RequestParam(required = false) ProductCategory category,
@@ -76,24 +74,14 @@ public class ShoppingStoreController {
     @PostMapping("/quantityState")
     public ResponseEntity<Boolean> updateProductQuantity(
             @RequestParam UUID productId,
-            @RequestParam Quantity quantityState) {
+            @RequestParam String quantityState) {
 
-        try {
-            Quantity quantity = Quantity.valueOf(String.valueOf(quantityState));
-            UpdateProductQuantityRequest request = new UpdateProductQuantityRequest(productId, quantity);
-            productService.updateProductQuantity(request);
+        Quantity quantity = Quantity.valueOf(quantityState);
+        UpdateProductQuantityRequest request = new UpdateProductQuantityRequest(productId, quantity);
+        productService.updateProductQuantity(request);
 
-            log.info("Статус количества обновлён для товара ID: {}", productId);
-            return ResponseEntity.ok(true);
-
-        } catch (IllegalArgumentException e) {
-            log.error("Неверное значение quantityState: {}. Допустимые значения: ENDED, FEW, ENOUGH, MANY",
-                    quantityState);
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            log.error("Ошибка при обновлении статуса количества: {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+        log.info("Статус количества обновлён для товара ID: {}", productId);
+        return ResponseEntity.ok(true);
     }
 
     @PatchMapping("/{productId}")
@@ -125,7 +113,6 @@ public class ShoppingStoreController {
         }
 
         ProductDto updatedProduct = productService.updateProduct(existingProduct);
-
         log.info("Товар {} частично обновлён", productId);
         return ResponseEntity.ok(updatedProduct);
     }
@@ -134,12 +121,7 @@ public class ShoppingStoreController {
     public ResponseEntity<Boolean> checkProductExists(@PathVariable UUID productId) {
         log.debug("Проверка существования товара ID: {}", productId);
 
-        try {
-            productService.getProductById(productId);
-            return ResponseEntity.ok(true);
-        } catch (Exception e) {
-            return ResponseEntity.ok(false);
-        }
-    }
+        boolean exists = productService.existsById(productId);
+        return ResponseEntity.ok(exists);    }
 
 }

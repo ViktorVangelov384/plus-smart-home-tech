@@ -35,10 +35,7 @@ public class CartProduct {
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        if (!(o instanceof CartProduct)) return false;
-
-        CartProduct that = (CartProduct) o;
+        if (!(o instanceof CartProduct that)) return false;
         return shoppingCartId != null &&
                 productId != null &&
                 Objects.equals(shoppingCartId, that.shoppingCartId) &&

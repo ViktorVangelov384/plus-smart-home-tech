@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.exception.NoProductInWarehouseException;
+import ru.yandex.practicum.exception.ProductAlreadyExistsException;
 import ru.yandex.practicum.mapper.WarehouseMapper;
 import ru.yandex.practicum.model.WarehouseProduct;
 import ru.yandex.practicum.model.warehouse.*;
@@ -28,19 +29,17 @@ public class WarehouseServiceImpl implements WarehouseService {
             WAREHOUSE_ADDRESSES[new Random().nextInt(WAREHOUSE_ADDRESSES.length)];
 
     private static final String PRODUCT_NOT_FOUND_MSG = "Товар с productId={0} не найден на складе";
-    private static final String INSUFFICIENT_STOCK_MSG =
-            "Недостаточно товара productId={0}. Требуется: {1}, доступно: {2}";
+    private static final String PRODUCT_ALREADY_EXISTS_MSG = "Товар с productId={0} уже существует на складе";
 
     @Transactional
     @Override
     public void addNewProduct(RegisterProductInWarehouseRequest request) {
         log.info("Добавление нового товара на склад: productId={}", request.getProductId());
 
-        validateNewProductRequest(request);
-
         if (repository.existsById(request.getProductId())) {
-            log.info("Товар уже существует, пропускаем создание: productId={}", request.getProductId());
-            return;
+            log.error("Товар уже существует: productId={}", request.getProductId());
+            throw new ProductAlreadyExistsException(
+                    MessageFormat.format(PRODUCT_ALREADY_EXISTS_MSG, request.getProductId()));
         }
 
         WarehouseProduct product = mapper.toEntity(request);
@@ -54,7 +53,6 @@ public class WarehouseServiceImpl implements WarehouseService {
     public BookedProductsDto checkAndBookProducts(ShoppingCartDto shoppingCart) {
         log.info("Проверка наличия товаров для корзины: cartId={}", shoppingCart.getCartId());
 
-        validateShoppingCart(shoppingCart);
 
         double totalWeight = 0.0;
         double totalVolume = 0.0;
@@ -65,8 +63,6 @@ public class WarehouseServiceImpl implements WarehouseService {
             Long requiredQuantity = entry.getValue();
 
             WarehouseProduct product = findProductOrThrow(productId);
-
-            validateProduct(product, requiredQuantity);
 
             totalWeight += calculateTotalWeight(product, requiredQuantity);
             totalVolume += calculateTotalVolume(product, requiredQuantity);
@@ -115,21 +111,6 @@ public class WarehouseServiceImpl implements WarehouseService {
         return address;
     }
 
-    private void validateNewProductRequest(RegisterProductInWarehouseRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Request не может быть null");
-        }
-        if (request.getProductId() == null) {
-            throw new IllegalArgumentException("ID товара не может быть null");
-        }
-        if (request.getDimension() == null) {
-            throw new IllegalArgumentException("Размеры товара не могут быть null");
-        }
-        if (request.getWeight() == null || request.getWeight() <= 0) {
-            throw new IllegalArgumentException("Вес товара должен быть больше 0");
-        }
-    }
-
     private WarehouseProduct findProductOrThrow(UUID productId) {
         return repository.findById(productId)
                 .orElseThrow(() -> {
@@ -137,34 +118,6 @@ public class WarehouseServiceImpl implements WarehouseService {
                     return new NoProductInWarehouseException(
                             MessageFormat.format(PRODUCT_NOT_FOUND_MSG, productId));
                 });
-    }
-
-    private void validateProduct(WarehouseProduct product, Long requiredQuantity) {
-        if (product.getQuantity() < requiredQuantity) {
-            throw new NoProductInWarehouseException(
-                    MessageFormat.format(INSUFFICIENT_STOCK_MSG,
-                            product.getProductId(),
-                            requiredQuantity,
-                            product.getQuantity()));
-        }
-    }
-
-    private void validateShoppingCart(ShoppingCartDto shoppingCart) {
-        if (shoppingCart == null) {
-            throw new IllegalArgumentException("Корзина не может быть null");
-        }
-        if (shoppingCart.getProducts() == null || shoppingCart.getProducts().isEmpty()) {
-            throw new IllegalArgumentException("Корзина не может быть пустой");
-        }
-    }
-
-    private void validateAddProductRequest(UUID productId, Long quantity) {
-        if (productId == null) {
-            throw new IllegalArgumentException("ID товара не может быть null");
-        }
-        if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("Количество должно быть больше 0");
-        }
     }
 
     private double calculateTotalWeight(WarehouseProduct product, Long quantity) {

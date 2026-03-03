@@ -138,6 +138,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         log.info("Корзина пользователя {} деактивирована", username);
     }
 
+    @Override
+    public boolean existsByUsername(String username) {
+        log.debug("Проверка существования корзины для пользователя: {}", username);
+        return shoppingCartRepository.existsByUsername(username);
+    }
+
     private void addProductsToCartInternal(ShoppingCart cart, Map<UUID, Long> products) {
         for (Map.Entry<UUID, Long> entry : products.entrySet()) {
             UUID productId = entry.getKey();
