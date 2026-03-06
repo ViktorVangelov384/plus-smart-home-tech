@@ -1,0 +1,34 @@
+spring:
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: shopping_cart_schema
+  sql:
+    init:
+      mode: always
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/commerce_shopping_cart
+    username: postgres
+    password: ${DB_PASSWORD:shareit}
+
+server:
+  port: 0
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.jdbc.datasource.init: DEBUG
+
+feign:
+  client:
+    config:
+      warehouse:
+        connectTimeout: 5000
+        readTimeout: 5000

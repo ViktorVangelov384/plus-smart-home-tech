@@ -2,8 +2,7 @@ package ru.yandex.practicum.factory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecord;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.sensor.*;
+import ru.yandex.practicum.model.sensor.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
 @Slf4j

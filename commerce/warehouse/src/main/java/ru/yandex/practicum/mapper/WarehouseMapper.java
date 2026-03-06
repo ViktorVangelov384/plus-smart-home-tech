@@ -1,0 +1,28 @@
+package ru.yandex.practicum.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.Named;
+import ru.yandex.practicum.model.WarehouseProduct;
+import ru.yandex.practicum.model.warehouse.RegisterProductInWarehouseRequest;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface WarehouseMapper {
+
+    @Mapping(target = "productId", source = "productId")
+    @Mapping(target = "width", source = "dimension.width")
+    @Mapping(target = "height", source = "dimension.height")
+    @Mapping(target = "depth", source = "dimension.depth")
+    @Mapping(target = "weight", source = "weight")
+    @Mapping(target = "fragile", source = "fragile")
+    @Mapping(target = "quantity", constant = "0L")
+    WarehouseProduct toEntity(RegisterProductInWarehouseRequest request);
+
+    @Named("calculateVolume")
+    default Double calculateVolume(WarehouseProduct product) {
+        if (product == null) return 0.0;
+        return product.getWidth() * product.getHeight() * product.getDepth();
+    }
+
+}

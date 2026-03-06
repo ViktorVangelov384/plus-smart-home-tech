@@ -2,7 +2,7 @@ package ru.yandex.practicum.gprc.sensor.mapper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.sensor.SensorEventDto;
+import ru.yandex.practicum.model.sensor.SensorEventDto;
 import ru.yandex.practicum.enums.SensorEventType;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 
