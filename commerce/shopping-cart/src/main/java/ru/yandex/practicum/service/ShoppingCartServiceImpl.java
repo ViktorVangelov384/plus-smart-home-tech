@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.client.WarehouseClient;
+import ru.yandex.practicum.feign.WarehouseCartClient;
 import ru.yandex.practicum.enums.CartState;
 import ru.yandex.practicum.exception.CartNotFoundException;
 import ru.yandex.practicum.exception.NoProductsInShoppingCartException;
@@ -26,7 +26,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
-    private final WarehouseClient warehouseClient;
+    private final WarehouseCartClient warehouseCartClient;
 
     private static final String CART_NOT_FOUND_MSG = "Корзина пользователя {0} не найдена";
     private static final String PRODUCT_NOT_IN_CART_MSG = "Товар {0} не найден в корзине";
@@ -59,7 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         try {
             ShoppingCartDto cartDto = convertToDto(cart);
-            BookedProductsDto booked = warehouseClient.checkProductQuantityInWarehouse(cartDto).getBody();
+            BookedProductsDto booked = warehouseCartClient.checkProductQuantityInWarehouse(cartDto).getBody();
             log.info("Проверка на складе пройдена: weight={}, volume={}, fragile={}",
                     booked.getTotalWeight(), booked.getTotalVolume(), booked.getContainsFragile());
         } catch (Exception e) {

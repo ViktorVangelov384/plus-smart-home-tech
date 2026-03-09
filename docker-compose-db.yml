@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  postgres-order:
+    image: postgres:16-alpine
+    container_name: postgres-order
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: order-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shareit
+
+  postgres-delivery:
+    image: postgres:16-alpine
+    container_name: postgres-delivery
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: delivery-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shareit
+
+  postgres-payment:
+    image: postgres:16-alpine
+    container_name: postgres-payment
+    ports:
+      - "5437:5432"
+    environment:
+      POSTGRES_DB: payment-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shareit
