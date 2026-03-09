@@ -175,11 +175,7 @@ public class OrderServiceImpl implements OrderService {
             case ON_DELIVERY:
                 warehouseClient.markShipped(order.getOrderId(), order.getDeliveryId());
                 break;
-            case PAYMENT_FAILED:
-                break;
-            case DELIVERY_FAILED:
-                break;
-            case ASSEMBLY_FAILED:
+            case PAYMENT_FAILED, DELIVERY_FAILED, ASSEMBLY_FAILED:
                 break;
             default:
         }
@@ -219,14 +215,13 @@ public class OrderServiceImpl implements OrderService {
 
     private void validateStateTransition(OrderState current, OrderState next) {
         boolean isValid = switch (current) {
-            case NEW -> next == OrderState.ON_PAYMENT || next == OrderState.CANCELED;
+            case NEW, PAYMENT_FAILED -> next == OrderState.ON_PAYMENT || next == OrderState.CANCELED;
             case ON_PAYMENT -> next == OrderState.PAID || next == OrderState.PAYMENT_FAILED || next == OrderState.CANCELED;
             case PAID -> next == OrderState.ASSEMBLED || next == OrderState.ON_DELIVERY;
             case ASSEMBLED -> next == OrderState.ON_DELIVERY || next == OrderState.ASSEMBLY_FAILED;
             case ON_DELIVERY -> next == OrderState.DELIVERED || next == OrderState.DELIVERY_FAILED;
             case DELIVERED -> next == OrderState.COMPLETED || next == OrderState.PRODUCT_RETURNED;
             case COMPLETED -> next == OrderState.PRODUCT_RETURNED;
-            case PAYMENT_FAILED -> next == OrderState.ON_PAYMENT || next == OrderState.CANCELED;
             case DELIVERY_FAILED -> next == OrderState.ON_DELIVERY || next == OrderState.CANCELED;
             case ASSEMBLY_FAILED -> next == OrderState.ASSEMBLED || next == OrderState.CANCELED;
             case PRODUCT_RETURNED -> next == OrderState.COMPLETED;

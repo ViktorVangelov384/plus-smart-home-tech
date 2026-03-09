@@ -23,41 +23,41 @@ public class PaymentController {
 
     @PostMapping("/product-cost")
     public ResponseEntity<BigDecimal> calculateProductCost(@Valid @RequestBody OrderDto orderDto) {
-        log.info("Запрос на расчет стоимости товаров для заказа: {}", orderDto.getOrderId());  // ✅ Добавлен log
+        log.info("Запрос на расчет стоимости товаров для заказа: {}", orderDto.getOrderId());
         BigDecimal productCost = paymentService.calculateProductCost(orderDto);
-        log.info("Стоимость товаров для заказа {}: {}", orderDto.getOrderId(), productCost);   // ✅ Добавлен log
+        log.info("Стоимость товаров для заказа {}: {}", orderDto.getOrderId(), productCost);
         return ResponseEntity.ok(productCost);
     }
 
     @PostMapping("/total-cost")
     public ResponseEntity<BigDecimal> calculateTotalCost(@Valid @RequestBody OrderDto orderDto) {
-        log.info("Запрос на расчет полной стоимости заказа: {}", orderDto.getOrderId());        // ✅ Добавлен log
+        log.info("Запрос на расчет полной стоимости заказа: {}", orderDto.getOrderId());
         BigDecimal totalCost = paymentService.calculateTotalCost(orderDto);
-        log.info("Полная стоимость заказа {}: {}", orderDto.getOrderId(), totalCost);           // ✅ Добавлен log
+        log.info("Полная стоимость заказа {}: {}", orderDto.getOrderId(), totalCost);
         return ResponseEntity.ok(totalCost);
     }
 
     @PostMapping
     public ResponseEntity<PaymentDto> createPayment(@Valid @RequestBody OrderDto orderDto) {
-        log.info("Запрос на создание платежа для заказа: {}", orderDto.getOrderId());           // ✅ Добавлен log
+        log.info("Запрос на создание платежа для заказа: {}", orderDto.getOrderId());
         PaymentDto createdPayment = paymentService.createPayment(orderDto);
-        log.info("Платеж {} создан для заказа {}", createdPayment.getPaymentId(), orderDto.getOrderId()); // ✅ Добавлен log
+        log.info("Платеж {} создан для заказа {}", createdPayment.getPaymentId(), orderDto.getOrderId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPayment);
     }
 
     @PostMapping("/{paymentId}/confirm")
     public ResponseEntity<Void> confirmPayment(@PathVariable UUID paymentId) {
-        log.info("Запрос на подтверждение платежа: {}", paymentId);                             // ✅ Добавлен log
+        log.info("Запрос на подтверждение платежа: {}", paymentId);
         paymentService.confirmPayment(paymentId);
-        log.info("Платеж {} подтвержден", paymentId);                                            // ✅ Добавлен log
+        log.info("Платеж {} подтвержден", paymentId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{paymentId}/fail")
     public ResponseEntity<Void> processFailedPayment(@PathVariable UUID paymentId) {
-        log.info("Запрос на обработку неудачного платежа: {}", paymentId);                      // ✅ Добавлен log
+        log.info("Запрос на обработку неудачного платежа: {}", paymentId);
         paymentService.processFailedPayment(paymentId);
-        log.info("Платеж {} отмечен как неудачный", paymentId);                                  // ✅ Добавлен log
+        log.info("Платеж {} отмечен как неудачный", paymentId);
         return ResponseEntity.ok().build();
     }
 }

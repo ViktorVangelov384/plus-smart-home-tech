@@ -41,12 +41,12 @@ eureka:
     instance-id: ${spring.application.name}:${random.value}
     prefer-ip-address: true
 
-    delivery:
-      calculation:
-        fragile-multiplier: 0.2      # +20% за хрупкость
-        weight-multiplier: 0.3       # ×0.3 за вес
-        volume-multiplier: 0.2       # ×0.2 за объем
-        address-multiplier: 0.2      # +20% если улицы не совпадают
-      warehouse:
-        address-1-multiplier: 1.0    # множитель для ADDRESS_1
-        address-2-multiplier: 2.0
+delivery:
+  calculation:
+    fragile-multiplier: 0.2
+    weight-multiplier: 0.3
+    volume-multiplier: 0.2
+    address-multiplier: 0.2
+  warehouse:
+    address-1-multiplier: 1.0
+    address-2-multiplier: 2.0

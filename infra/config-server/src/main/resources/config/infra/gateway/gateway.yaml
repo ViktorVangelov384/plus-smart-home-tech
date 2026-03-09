@@ -40,13 +40,45 @@ spring:
           predicates:
             - Path=/payment/**
           filters:
-          - PrefixPath=/api/v1
-          - name: Retry
-            args:
-              retries: 3
-              statuses: SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT
-              methods: GET, POST
-              backoff:
-                firstBackoff: 100ms
-                maxBackoff: 2000ms
-                factor: 2
+            - PrefixPath=/api/v1
+            - name: Retry
+              args:
+                retries: 3
+                statuses: SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 2000ms
+                  factor: 2
+
+        - id: order_service_route
+          uri: lb://order
+          predicates:
+            - Path=/order/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: Retry
+              args:
+                retries: 3
+                statuses: SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT
+                methods: GET, POST, PUT
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 2000ms
+                  factor: 2
+
+        - id: delivery_service_route
+          uri: lb://delivery
+          predicates:
+            - Path=/delivery/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: Retry
+              args:
+                retries: 3
+                statuses: SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 2000ms
+                  factor: 2
