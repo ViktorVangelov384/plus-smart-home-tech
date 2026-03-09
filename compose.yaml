@@ -34,17 +34,6 @@ services:
                              --bootstrap-server kafka:29092'"
     init: true
 
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: telemetry_analyzer
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: shareit
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
